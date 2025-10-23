@@ -46,7 +46,7 @@ Conducted full security audit of home network, identifying vulnerabilities and i
 
 ## 📊 Deliverables
 
-- **[Network Audit Report](./Network Audit - 10_16_25-1.pdf)** - Complete security assessment documentation
+- **[Network Audit Report](Network Audit - 10_16_25-1.pdf)** - Complete security assessment documentation
 - **Network Topology Diagram** - Visual representation of network architecture
 - **Device Inventory** - Complete asset list with MAC addresses
 - **Remediation Documentation** - Before/after configurations
