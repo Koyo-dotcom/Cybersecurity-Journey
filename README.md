@@ -5,17 +5,17 @@ I'm a college freshman starting on my journey to break into cybersecurity. This 
 
 
 ## Networking Documentation
-### Project 1: [Home Network Security Audit](./Home-Network-Security-Audit)
+### [Home Network Security Audit](./Home-Network-Security-Audit)
 
 Conducted full security audit of home network, identifying vulnerabilities and implementing industry-standard remediation measures. This project demonstrates hands-on experience with network security, router administration, and professional documentation practices.
 
 ## Python Functions
 
-### Project 2: [Port Scanner with Python](./python-port-scanner)
+### [Port Scanner with Python](./python-port-scanner)
 
 Created a basic port scanner that takes an IPv4 address and tries to connect using TCP protocol to see if the port is open.
 
-### Project 3: [Password Integrity Checker](./python-password-checker)
+### [Password Integrity Checker](./python-password-checker)
 
 Created a function that takes an inputted password, checks it for a capital letter, number, and special character and repeats if it doesn't contain that.
 
