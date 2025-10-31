@@ -11,9 +11,6 @@ Conducted full security audit of home network, identifying vulnerabilities and i
 
 ## Python Functions
 
-### [Port Scanner with Python](./python-port-scanner)
-
-Created a basic port scanner that takes an IPv4 address and tries to connect using TCP protocol to see if the port is open.
 
 ### [Password Integrity Checker](./python-password-checker)
 
@@ -21,7 +18,7 @@ Created a function that takes an inputted password, checks it for a capital lett
 
 ## Homelabbing/Virtualization
 
-### Windows AD
+### [Windows AD](./Home-Lab/Windows-Server)
 
 Configured a Windows 2022 Server with a Windows 11 Client to simulate a real-work environment.
 
