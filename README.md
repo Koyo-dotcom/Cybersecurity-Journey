@@ -12,7 +12,7 @@ Conducted full security audit of home network, identifying vulnerabilities and i
 ## Python Functions
 
 
-### [Password Integrity Checker](./python-password-checker)
+### [Password Integrity Checker](./Python-Password-Checker)
 
 Created a function that takes an inputted password, checks it for a capital letter, number, and special character and repeats if it doesn't contain that.
 
