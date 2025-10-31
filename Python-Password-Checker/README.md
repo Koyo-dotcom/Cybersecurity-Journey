@@ -1,6 +1,8 @@
-# This script runs inputted passwords through its security requirements until it gets a valid one.
+# Python Password Integrity Checker
 
-## These requirements are:
+This script runs inputted passwords through its security requirements until it gets a valid one.
+
+### These requirements are:
 - Has a special character
 - Has a number
 - Has a capital letter
