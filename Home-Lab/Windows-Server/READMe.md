@@ -131,6 +131,8 @@ On each Windows 10 VM:
 4. Selected "Domain" and typed: homelab.local
 5. Entered domain admin username and password
 6. Computer restarted
+<img width="1572" height="748" alt="image" src="https://github.com/user-attachments/assets/db5b9d8a-4627-4663-81d2-a6bf98146326" />
+
 
 Success! The computers are now part of the homelab.local domain.
 
@@ -144,6 +146,8 @@ I logged into PC01 using domain credentials:
 4. Windows prompted me to change password (as configured)
 5. Set new password: NewPass123!
 6. Successfully logged in!
+
+<img width="1193" height="745" alt="image" src="https://github.com/user-attachments/assets/a996d4c3-a58c-411f-b098-c7f34cb1b1c5" />
 
 The user profile was created automatically. Everything worked!
 
@@ -162,6 +166,10 @@ The user profile was created automatically. Everything worked!
    - Enabled "Prohibit access to Control Panel and PC settings"
 5. On PC01, ran `gpupdate /force`
 
+<img width="1391" height="745" alt="image" src="https://github.com/user-attachments/assets/77606756-420e-4863-b60a-998d19caba96" />
+<img width="1211" height="753" alt="image" src="https://github.com/user-attachments/assets/5a489a65-d25f-44b5-9a8c-eca09068ea3c" />
+
+
 **Result:** Mary Jones (HR user) cannot open Control Panel anymore. Perfect for restricting non-technical users!
 
 ### Policy 2: Desktop Wallpaper
@@ -175,6 +183,8 @@ The user profile was created automatically. Everything worked!
    - User Configuration → Administrative Templates → Desktop → Desktop
    - Set "Desktop Wallpaper" to company image path
 4. Ran `gpupdate /force` on client computers
+<img width="1581" height="750" alt="image" src="https://github.com/user-attachments/assets/f7fb5e72-e054-4e21-867b-5c97ef946b16" />
+<img width="1572" height="751" alt="image" src="https://github.com/user-attachments/assets/03a0fb66-611d-479e-a28e-fbda1ddd112a" />
 
 **Result:** All users see the company wallpaper when they log in.
 
@@ -189,6 +199,7 @@ The user profile was created automatically. Everything worked!
    - Minimum password length: 8 characters
    - Password must meet complexity requirements: Enabled
    - Maximum password age: 90 days
+<img width="1200" height="745" alt="image" src="https://github.com/user-attachments/assets/019b3da5-d480-4610-92df-4e0c336b8666" />
 
 **Result:** Users must create strong passwords and change them every 90 days.
 
@@ -202,6 +213,7 @@ The user profile was created automatically. Everything worked!
 3. Enabled "Interactive logon: Machine inactivity limit" → 600 seconds
 
 **Result:** Computers lock automatically if no one is using them. Good for security!
+<img width="1199" height="751" alt="image" src="https://github.com/user-attachments/assets/e2988a88-ea10-498a-a077-4b4f2e735d8f" />
 
 ## File Permissions Setup
 
@@ -238,11 +250,13 @@ C:\SharedFiles
 4. Added specific groups (IT_Team, HR_Team, etc.)
 5. Set NTFS permissions under "Security" tab
 6. Made sure NTFS permissions matched share permissions
+<img width="1378" height="747" alt="image" src="https://github.com/user-attachments/assets/b98866d4-62be-4139-a28a-7f9c76504f57" />
 
 **Testing:**
 - Logged in as john.smith (IT) - Could access IT_Only folder ✓
 - Logged in as mary.jones (HR) - Could NOT access IT_Only folder ✓
 - Both could access Everyone folder ✓
+<img width="1201" height="747" alt="image" src="https://github.com/user-attachments/assets/4e56666b-12cd-46cf-972a-219e38c677d3" />
 
 ## Testing Common IT Support Scenarios
 
@@ -261,6 +275,7 @@ C:\SharedFiles
 8. User logged in and was forced to create new password
 
 **Time to resolve:** 2 minutes
+<img width="1199" height="747" alt="image" src="https://github.com/user-attachments/assets/9ff48dca-b62e-4596-a851-cffa7632ebc0" />
 
 **Skills demonstrated:** Password reset, user support, security best practices
 
@@ -280,6 +295,7 @@ C:\SharedFiles
 ```powershell
 Unlock-ADAccount -Identity john.smith
 ```
+<img width="1200" height="744" alt="image" src="https://github.com/user-attachments/assets/bfadf94d-c6c9-49b3-a5bf-2da3047f1989" />
 
 **Time to resolve:** 1 minute
 
@@ -299,6 +315,7 @@ Unlock-ADAccount -Identity john.smith
 6. Clicked Finish
 7. Added sarah.johnson to HR_Team group
 8. Verified permissions by logging in as Sarah
+<img width="1194" height="753" alt="image" src="https://github.com/user-attachments/assets/f1fea798-bed9-4489-b7c0-75c07164af01" />
 
 **Time to complete:** 5 minutes
 
@@ -310,6 +327,7 @@ Unlock-ADAccount -Identity john.smith
 1. Checked what groups Mary is in: `HR_Team`
 2. Checked IT_Only folder permissions: Only `IT_Team` has access
 3. This is correct! HR shouldn't access IT files
+<img width="1195" height="748" alt="image" src="https://github.com/user-attachments/assets/d6193e89-0441-41c7-9d5a-710933417b31" />
 
 **Resolution:**
 Explained to user that this folder is restricted to IT department only. Not a problem - security working as designed!
@@ -318,6 +336,7 @@ If she actually NEEDED access, I would:
 1. Ask IT manager for approval
 2. Add mary.jones to IT_Team group OR
 3. Add HR_Team to folder permissions with appropriate access level
+<img width="1191" height="749" alt="image" src="https://github.com/user-attachments/assets/0658e93f-147b-41f9-9439-8f87af0e0545" />
 
 **Time to resolve:** 3 minutes
 
@@ -358,6 +377,8 @@ Reset-ComputerMachinePassword -Server DC01 -Credential HOMELAB\Administrator
    - Removed all other permissions
 4. Created shortcut in user's Group Policy mapped drives
 5. Tested access with Finance user account
+<img width="1191" height="750" alt="image" src="https://github.com/user-attachments/assets/57fb2e35-4891-4a9a-a3c6-ae5c2ae5a276" />
+<img width="1194" height="749" alt="image" src="https://github.com/user-attachments/assets/002dad18-11f1-490a-94fb-0e75824ddb60" />
 
 **Time to complete:** 8 minutes
 
@@ -422,8 +443,9 @@ Reset-ComputerMachinePassword -Server DC01 -Credential HOMELAB\Administrator
 **Challenge 2:** Group Policy not applying
 - **Solution:** Ran `gpupdate /force` and restarted computer. Learned policies don't apply instantly.
 
-**Challenge 3:** Users could still access restricted folders
-- **Solution:** NTFS permissions were allowing access even though share permissions blocked it. Learned both need to be configured correctly.
+**Challenge 3:** NTFS permissions weren't changing
+- **Solution:** NTFS permissions were allowing inheritance from parent. Learned that this setting is configured separately.
+<img width="1202" height="755" alt="image" src="https://github.com/user-attachments/assets/ec6ad070-1ce5-448b-af12-f7a3dbb13553" />
 
 **Challenge 4:** Forgot DSRM password for DC
 - **Solution:** Documented all passwords in secure location. Learned importance of password management.
@@ -451,36 +473,25 @@ Reset-ComputerMachinePassword -Server DC01 -Credential HOMELAB\Administrator
 
 - `README.md` - This file
 - `screenshots/` - Screenshots of setup process
-- `scripts/` - PowerShell scripts for user management
-- `documentation/` - Detailed setup notes
 
 ## Resources Used
 
 - Microsoft Documentation
-- Professor Messer's YouTube videos
-- TechNet articles
+- KevTech's YouTube Videos
+- Claude
 - My own trial and error!
 
-## Screenshots
-
-*(Add screenshots showing:)*
-- Active Directory Users and Computers with OUs
-- Group Policy Management Console
-- Client computer joined to domain
-- User logging in with domain account
-- Group Policy applied (locked Control Panel)
-- Shared folder permissions settings
 
 ## Contact
 
 Questions about this project? Feel free to reach out!
 
-- Email: your.email@gmail.com
-- LinkedIn: your-linkedin-profile
-- GitHub: your-github-username
+- Email: keikoyoter@gmail.com
+- LinkedIn: [your-linkedin-profile](https://www.linkedin.com/in/koyo-keiter-20962b37a/)
+- GitHub: Koyo-dotcom
 
 ---
 
 **Project Status:** Complete ✓  
 **Date Completed:** November 2024  
-**Time Invested:** ~15 hours over 2 weeks
+**Time Invested:** ~10 hours over 2 weeks
