@@ -469,11 +469,6 @@ Reset-ComputerMachinePassword -Server DC01 -Credential HOMELAB\Administrator
 - Set up VPN access for remote users
 - Create disaster recovery plan and test it
 
-## Files in This Repository
-
-- `README.md` - This file
-- `screenshots/` - Screenshots of setup process
-
 ## Resources Used
 
 - Microsoft Documentation
