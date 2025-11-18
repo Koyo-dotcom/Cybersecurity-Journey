@@ -63,7 +63,16 @@ This project documents the deployment and testing of a Wazuh SIEM solution in a 
 - **Isolation**: Lab traffic shares host network (production environments should use isolated VLANs)
 - **Firewall**: Windows Firewall configured to allow agent communication (port 1514/TCP)
 
-> **📸 Screenshot Location:** `/screenshots/proxmox-vm-hardware.png` - VM hardware configuration
+**SIEM Server Hardware Configuration**
+<img width="1528" height="203" alt="image" src="https://github.com/user-attachments/assets/28d43ffa-b337-4d8f-b1ef-40a3736974a0" />
+
+**Kali Linux Hardware Configuration**
+<img width="1526" height="231" alt="image" src="https://github.com/user-attachments/assets/65b7a985-fdd3-4924-be9b-1127ca037802" />
+
+**Windows Hardware Configuration**
+<img width="1528" height="300" alt="image" src="https://github.com/user-attachments/assets/3c71e87b-33b0-489a-ab56-dd5f579c56c5" />
+
+
 
 ## 📥 Environment Configuration
 
@@ -84,7 +93,7 @@ sudo bash ./wazuh-install.sh -a -i
 - Agent communication configured on port 1514/TCP
 - Self-signed certificates used (lab environment)
 
-> **📸 Screenshot Location:** `/screenshots/wazuh-dashboard-login.png` - Wazuh dashboard interface
+<img width="1868" height="928" alt="image" src="https://github.com/user-attachments/assets/a6640041-b7c4-4ed7-bf5e-79829e4144ad" />
 
 ### Windows Endpoint Configuration
 
@@ -115,10 +124,8 @@ sudo bash ./wazuh-install.sh -a -i
    - Remote admin share access enabled (LocalAccountTokenFilterPolicy)
    - Windows Defender temporarily disabled for testing
 
-> **📸 Screenshot Location:** 
-> - `/screenshots/sysmon-event-viewer.png` - Sysmon operational logs
-> - `/screenshots/wazuh-agent-config.png` - Agent configuration file
-> - `/screenshots/windows-agent-status.png` - Agent connected status in dashboard
+<img width="1868" height="918" alt="image" src="https://github.com/user-attachments/assets/bcc6b463-4971-484b-8e16-94a673895a35" />
+<img width="1196" height="745" alt="image" src="https://github.com/user-attachments/assets/4968cb84-35c8-47ab-98b8-bda4465c40aa" />
 
 ### Kali Linux Attack Platform
 
