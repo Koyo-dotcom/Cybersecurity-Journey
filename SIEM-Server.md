@@ -53,8 +53,8 @@ This project documents the deployment and testing of a Wazuh SIEM solution in a 
 | Component | Specifications | Role | IP Assignment |
 |-----------|---------------|------|---------------|
 | Wazuh Manager | Ubuntu Server 22.04, 8GB RAM, 4 vCPU, 50GB | SIEM platform, log aggregation, alerting | Static IP |
-| Windows Endpoint | Windows 10/11 Pro, 4GB RAM, 2 vCPU, 60GB | Monitored target, log generation | DHCP/Static |
-| Kali Linux | Kali 2024.x, 2GB RAM, 2 vCPU, 40GB | Adversary simulation platform | DHCP/Static |
+| Windows Endpoint | Windows 10/11 Pro, 4GB RAM, 2 vCPU, 60GB | Monitored target, log generation | DHCP/Static | 192.168.1.199
+| Kali Linux | Kali 2024.x, 2GB RAM, 2 vCPU, 40GB | Adversary simulation platform | DHCP/Static | 192.168.1.202
 
 ### Network Configuration
 
@@ -147,41 +147,9 @@ sudo bash ./wazuh-install.sh -a -i
 
 Adversary techniques were simulated following the MITRE ATT&CK framework across multiple tactics: Reconnaissance, Initial Access, Execution, Persistence, Credential Access, and Lateral Movement. Each technique was executed from the Kali Linux platform against the Windows endpoint.
 
-### 1. Network Reconnaissance (TA0043)
 
-**Technique**: Active Scanning (T1595)
 
-**Implementation:**
-```bash
-nmap -sV -sC 192.168.1.199
-sudo nmap -sS -T4 -p- 192.168.1.199
-```
-
-**Detection Results:**
-- ✅ Sysmon Event ID 3 captured incoming connections
-- ✅ Multiple network connection events correlated
-- ⚠️ Required custom rule tuning for port scan detection
-- Detection rate: High (with proper correlation rules)
-
-> **📸 Screenshot Location:** 
-> - `/screenshots/nmap-scan-output.png` - Nmap scan results
-> - `/screenshots/siem-port-scan-detection.png` - Wazuh alert for reconnaissance activity
-
-**Key Finding**: Default Wazuh configuration does not aggressively flag port scans. Custom rule created:
-```xml
-<rule id="100200" level="10">
-  <if_group>sysmon_event3</if_group>
-  <description>Port scan detected - Multiple connection attempts</description>
-  <same_source_ip />
-  <different_dstport />
-  <frequency>10</frequency>
-  <timeframe>60</timeframe>
-</rule>
-```
-
----
-
-### 2. Brute Force Attack (T1110)
+### 1. Brute Force Attack (T1110)
 
 **Technique**: Password Guessing against SMB and RDP
 
@@ -203,10 +171,9 @@ hydra -l Administrator -P passwords.txt rdp://192.168.1.199 -t 1
 - ✅ Source IP correctly identified in alerts
 - Detection rate: 100%
 
-> **📸 Screenshot Location:** 
-> - `/screenshots/brute-force-attack-terminal.png` - Hydra/smbclient output
-> - `/screenshots/siem-brute-force-alerts.png` - Wazuh authentication failure alerts
-> - `/screenshots/event-4625-details.png` - Windows Security Event Log detail
+<img width="1361" height="746" alt="image" src="https://github.com/user-attachments/assets/3cb2125a-603b-4476-9dba-972ae9017c04" />
+<img width="1526" height="815" alt="image" src="https://github.com/user-attachments/assets/0ae34575-56f0-4de7-8a56-f0b6a2f862c2" />
+<img width="1527" height="873" alt="image" src="https://github.com/user-attachments/assets/5f9ed000-aced-48e5-8b2c-3c8b5174042a" />
 
 **Challenge Encountered**: 
 - Account lockout policy triggered after default threshold (5 attempts)
@@ -215,7 +182,7 @@ hydra -l Administrator -P passwords.txt rdp://192.168.1.199 -t 1
 
 ---
 
-### 3. PowerShell Execution (T1059.001)
+### 2. PowerShell Execution (T1059.001)
 
 **Technique**: Command and Scripting Interpreter - PowerShell
 
@@ -233,42 +200,17 @@ powershell -ExecutionPolicy Bypass -Command "Get-Process"
 - ✅ Encoded command execution flagged
 - Detection rate: 100%
 
-> **📸 Screenshot Location:** 
-> - `/screenshots/powershell-malicious-command.png` - PowerShell execution
-> - `/screenshots/siem-powershell-alert.png` - Wazuh PowerShell detection alert
-> - `/screenshots/script-block-logging.png` - PowerShell Event Log (Event ID 4104)
+<img width="1520" height="746" alt="image" src="https://github.com/user-attachments/assets/539f1ed4-9c54-4705-a3bb-502f1844a02c" />
+<img width="1869" height="921" alt="image" src="https://github.com/user-attachments/assets/27e97b71-1183-470d-b547-51cd39b14f18" />
+<img width="1520" height="744" alt="image" src="https://github.com/user-attachments/assets/cb7c33f0-d624-49a5-9158-2548a1127d24" />
 
 **Key Finding**: PowerShell logging is critical. Without Script Block Logging enabled, command content would be invisible to SIEM.
 
 ---
 
-### 4. Credential Dumping (T1003)
 
-**Technique**: OS Credential Dumping - LSASS Memory (T1003.001)
 
-**Implementation:**
-```powershell
-.\mimikatz.exe
-privilege::debug
-sekurlsa::logonpasswords
-```
-
-**Detection Results:**
-- ✅ **Rule 61603**: Mimikatz usage detected
-- ✅ **Sysmon Event ID 10**: LSASS process access
-- ✅ Process name "mimikatz.exe" flagged
-- Detection rate: 100%
-
-> **📸 Screenshot Location:** 
-> - `/screenshots/mimikatz-execution.png` - Mimikatz credential dump
-> - `/screenshots/siem-mimikatz-alert.png` - Wazuh credential dumping alert
-> - `/screenshots/sysmon-lsass-access.png` - Sysmon Event ID 10 showing LSASS access
-
-**Key Finding**: Sysmon's LSASS access monitoring is essential for detecting credential theft attempts.
-
----
-
-### 5. Persistence - Registry Run Keys (T1547.001)
+### 3. Persistence - Registry Run Keys (T1547.001)
 
 **Technique**: Boot or Logon Autostart Execution - Registry Run Keys
 
@@ -283,27 +225,7 @@ reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v Malware /t REG_S
 - ✅ Value name and data captured in logs
 - Detection rate: High
 
-> **📸 Screenshot Location:** 
-> - `/screenshots/registry-persistence.png` - Registry modification command
-> - `/screenshots/siem-registry-alert.png` - Wazuh registry change alert
+<img width="1523" height="744" alt="image" src="https://github.com/user-attachments/assets/6890d0ac-346c-4188-b8d1-481b360380b2" />
+<img width="1868" height="866" alt="image" src="https://github.com/user-attachments/assets/7479a19f-5e86-459a-999b-c38c248f24ed" />
 
----
 
-### 6. Scheduled Task Creation (T1053.005)
-
-**Technique**: Scheduled Task/Job
-
-**Implementation:**
-```powershell
-schtasks /create /tn "WindowsUpdate" /tr "powershell.exe -w hidden" /sc onlogon /ru System
-```
-
-**Detection Results:**
-- ✅ **Event ID 4698**: Scheduled task created
-- ✅ Task name and command captured
-- ✅ Suspicious task parameters detected
-- Detection rate: High
-
-> **📸 Screenshot Location:** 
-> - `/screenshots/scheduled-task-creation.png` - schtasks command
-> - `/screenshots/siem-scheduled-task-alert.png` - Wazuh scheduled task alert
