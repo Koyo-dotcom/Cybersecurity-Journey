@@ -22,7 +22,7 @@ Created a function that takes an inputted password, checks it for a capital lett
 
 Configured a Windows 2022 Server with a Windows 11 Client to simulate a real-work environment.
 
-### [SIEM Server](./SIEM-Server)
+### [SIEM Server](./SIEM-Server.md)
 
 Configured 3 VMs: Ubuntu server, Kali Linux, Windows 11 on a Wazuh webpage to display logs from Windows 11 VM while conducting MITRE ATT&CK techniques on it from Kali Linux.
 
